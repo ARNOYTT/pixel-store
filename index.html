@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIXEL STORE</title>
+    <title>HORIZON | Premium Digital Store</title>
     <meta name="description" content="Premium verified accounts delivered instantly. Join the elite community of traders and gamers.">
     
     <!-- Preload critical resources -->
@@ -154,7 +154,7 @@
             </div>
         </div>
         <h2 class="text-4xl font-extrabold tracking-tighter text-white mb-2">
-            PIXEL<span class="text-violet-500">STORE</span>
+            HORI<span class="text-violet-500">ZON</span>
         </h2>
         <div class="w-64 h-1 bg-slate-800 rounded-full overflow-hidden mt-4">
             <div id="loading-bar" class="h-full bg-gradient-to-r from-violet-600 to-blue-500 w-0 transition-all duration-300"></div>
@@ -214,7 +214,7 @@
                             H
                         </div>
                         <div class="hidden sm:block">
-                            <h1 class="text-lg font-bold text-white leading-none tracking-tight">PIXEL STORE</h1>
+                            <h1 class="text-lg font-bold text-white leading-none tracking-tight">HORIZON</h1>
                             <p id="user-info" class="text-[10px] text-slate-400 font-mono uppercase tracking-widest"></p>
                         </div>
                     </div>
@@ -222,7 +222,18 @@
                     <!-- Actions -->
                     <div class="flex items-center gap-2 sm:gap-4">
                         
-
+                        <!-- Wallet Display -->
+                        <div class="flex items-center bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner">
+                            <i class="fas fa-wallet text-slate-500 text-xs sm:hidden mr-1.5" aria-hidden="true"></i>
+                            <span class="text-[10px] font-bold text-slate-500 mr-2 hidden sm:inline tracking-wider">WALLET</span>
+                            <span class="text-sm font-bold text-emerald-400 font-mono">₹<span id="wallet-balance">0.00</span></span>
+                        </div>
+                        
+                        <!-- Deposit Button -->
+                        <button id="deposit-btn" class="bg-violet-600 hover:bg-violet-500 text-white p-2 rounded-lg sm:px-4 sm:py-1.5 flex items-center gap-2 transition-all shadow-lg shadow-violet-500/20 active:scale-95" aria-label="Add funds to wallet">
+                            <i class="fas fa-plus text-xs" aria-hidden="true"></i>
+                            <span class="hidden sm:inline text-xs font-bold uppercase tracking-wider">Add Funds</span>
+                        </button>
                         
                         <!-- User Menu -->
                         <div class="relative group">
@@ -230,7 +241,10 @@
                                 <i class="fas fa-bars text-lg" aria-hidden="true"></i>
                             </button>
                             <div class="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50" role="menu">
-
+                                <button id="transactions-btn" class="block w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2" role="menuitem">
+                                    <i class="fas fa-history w-4 text-center" aria-hidden="true"></i> History
+                                </button>
+                                <div class="h-px bg-slate-800 mx-2" aria-hidden="true"></div>
                                 <button id="logout-btn" class="block w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 flex items-center gap-2" role="menuitem">
                                     <i class="fas fa-sign-out-alt w-4 text-center" aria-hidden="true"></i> Logout
                                 </button>
@@ -303,7 +317,7 @@
             <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
                     <div class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-xs text-slate-500 font-bold" aria-hidden="true">H</div>
-                    <p class="text-slate-600 text-sm">© 2023 PIXEL STORE</p>
+                    <p class="text-slate-600 text-sm">© 2023 Horizon Digital.</p>
                 </div>
                 <div class="flex gap-6 text-slate-500">
                     <a href="#" class="hover:text-white transition" aria-label="Discord"><i class="fab fa-discord" aria-hidden="true"></i></a>
@@ -316,6 +330,165 @@
 
     <!-- MODALS -->
     
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true" role="dialog" aria-labelledby="deposit-modal-title">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity" id="deposit-backdrop"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-slate-900 border border-slate-700 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[90vh]">
+                <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900">
+                    <div>
+                        <h3 id="deposit-modal-title" class="text-lg font-bold text-white">Add Funds</h3>
+                        <p class="text-xs text-slate-400">Secure UPI Payment</p>
+                    </div>
+                    <button id="close-deposit-modal" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition" aria-label="Close deposit modal">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6 overflow-y-auto">
+                    <!-- QR Code Container -->
+                    <div class="bg-white p-2 rounded-xl mx-auto w-64 h-64 mb-6 relative shadow-lg">
+                         <img src="https://scontent.ftrv3-1.fna.fbcdn.net/v/t1.15752-9/588634959_837664489164299_4896842417622211319_n.png?_nc_cat=102&ccb=1-7&_nc_sid=0024fc&_nc_ohc=etg18j4hzsMQ7kNvwF6JFmE&_nc_oc=AdmaZ1w_S7tEmJNyFzV0br5GFAXRPp-VULrUptw95Uc7QSCM3HLmZdZKqq3oUk1bHF4&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.ftrv3-1.fna&oh=03_Q7cD3wHsZ-w-drQf85y3oonEeOvMGnBRyl6fBU7o5TH3EusFmg&oe=694E6391" 
+                              alt="Payment QR Code" 
+                              class="w-full h-full object-contain">
+                         <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-0.5 rounded-full border border-slate-700 whitespace-nowrap">
+                             Scan with any UPI App
+                         </div>
+                    </div>
+                    
+                    <form id="deposit-form" class="space-y-4">
+                        <div>
+                            <label for="payer-name" class="block text-[10px] uppercase text-slate-500 font-bold mb-1.5 ml-1">Payer Name</label>
+                            <div class="relative">
+                                <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" aria-hidden="true"></i>
+                                <input type="text" id="payer-name" placeholder="Enter your name" class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-4 py-3 text-sm text-white focus:outline-none focus:border-violet-500 transition-colors" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="utr-id" class="block text-[10px] uppercase text-slate-500 font-bold mb-1.5 ml-1">UTR / Ref Number</label>
+                            <div class="relative">
+                                <i class="fas fa-hashtag absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" aria-hidden="true"></i>
+                                <input type="text" id="utr-id" placeholder="12-digit transaction ID" class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-4 py-3 text-sm text-white focus:outline-none focus:border-violet-500 transition-colors" required minlength="12" maxlength="12">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="deposit-amount" class="block text-[10px] uppercase text-slate-500 font-bold mb-1.5 ml-1">Amount</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold">₹</span>
+                                <input type="number" id="deposit-amount" placeholder="0.00" min="1" step="0.01" class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-4 py-3 text-sm text-white focus:outline-none focus:border-violet-500 transition-colors" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="p-5 border-t border-slate-800 bg-slate-900/50">
+                    <button id="submit-deposit-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2">
+                        <i class="fas fa-check-circle" aria-hidden="true"></i> Verify Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="details-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-0 sm:p-4">
+            <div class="bg-slate-900 border border-slate-700 w-full max-w-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[100vh] sm:max-h-[90vh] animate-slide-up">
+                
+                <!-- Modal Header -->
+                <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900 z-20">
+                    <div>
+                        <h3 id="modal-title" class="text-lg font-bold text-white truncate pr-4">Account Details</h3>
+                        <p class="text-xs text-emerald-400 font-mono">INSTANT DELIVERY</p>
+                    </div>
+                    <button id="close-details-modal" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition" aria-label="Close details modal">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <!-- Scrollable Content -->
+                <div class="overflow-y-auto flex-1 bg-slate-950">
+                    <!-- Media Gallery -->
+                    <div class="relative aspect-video bg-black group">
+                        <div id="media-slider" class="w-full h-full flex transition-transform duration-300 ease-out">
+                            <!-- Slides injected here -->
+                        </div>
+                        <!-- Nav Controls -->
+                        <button id="media-prev" class="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/80 flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all" aria-label="Previous image">
+                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <button id="media-next" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/80 flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all" aria-label="Next image">
+                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                        </button>
+                        <div id="media-indicators" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                            <!-- Indicators -->
+                        </div>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <div class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Description</h4>
+                            <p id="modal-description" class="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fixed Footer Actions -->
+                <div class="p-4 border-t border-slate-800 bg-slate-900 z-20">
+                    <div id="modal-buttons" class="flex gap-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Modal -->
+    <div id="transactions-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true" role="dialog" aria-labelledby="transactions-title">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[80vh]">
+                <div class="p-5 border-b border-slate-800 flex justify-between items-center">
+                    <h3 id="transactions-title" class="text-xl font-bold text-white">History</h3>
+                    <button id="close-transactions-modal" class="text-slate-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-800" aria-label="Close transactions modal"><i class="fas fa-times" aria-hidden="true"></i></button>
+                </div>
+                <div id="transactions-list" class="p-4 overflow-y-auto flex-1 space-y-3 bg-slate-950/50">
+                    <!-- List Items -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Credentials Modal -->
+    <div id="credentials-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true" role="dialog" aria-labelledby="credentials-title">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-slate-900 border border-slate-700 w-full max-w-md rounded-2xl shadow-2xl p-8 text-center animate-fade-in relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
+                <div class="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
+                    <i class="fas fa-check text-4xl text-emerald-400" aria-hidden="true"></i>
+                </div>
+                <h3 id="credentials-title" class="text-2xl font-bold text-white mb-2">Purchase Successful!</h3>
+                <p class="text-slate-400 text-sm mb-8">Your credentials have been retrieved securely.</p>
+                
+                <div class="bg-black/40 rounded-xl p-6 text-left space-y-5 border border-slate-800 mb-8 relative group">
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Username / Email</label>
+                        <div id="purchased-id" class="text-lg font-mono text-white select-all mt-1"></div>
+                    </div>
+                    <div class="border-t border-slate-800 pt-4">
+                        <label class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Password</label>
+                        <div id="purchased-pass" class="text-lg font-mono text-white select-all mt-1"></div>
+                    </div>
+                    <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition text-xs text-slate-600">
+                        <i class="fas fa-copy" aria-hidden="true"></i> Double tap to select
+                    </div>
+                </div>
+                
+                <button id="close-credentials-modal" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl transition border border-slate-700">Close Window</button>
+            </div>
+        </div>
+    </div>
+
     <!-- WhatsApp Float -->
     <a href="https://wa.me/919526725376?text=Hi! I need support regarding an account purchase." target="_blank" class="fixed bottom-6 right-6 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg shadow-green-900/30 hover:scale-110 transition-transform z-40 border-2 border-white/10" aria-label="Contact support on WhatsApp">
         <i class="fab fa-whatsapp text-3xl text-white" aria-hidden="true"></i>
@@ -332,7 +505,7 @@
         import { getDatabase, ref, set, get, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
         
         const firebaseConfig = {
-  apiKey: "AIzaSyDcYGDMyiIszvnA5a9rMAmLMYFcyloub6M",
+            apiKey: "AIzaSyDcYGDMyiIszvnA5a9rMAmLMYFcyloub6M",
   authDomain: "pixel-store-c64d7.firebaseapp.com",
   databaseURL: "https://pixel-store-c64d7-default-rtdb.firebaseio.com",
   projectId: "pixel-store-c64d7",
@@ -355,6 +528,7 @@
         const loadingAccounts = document.getElementById('loading-accounts');
         
         let currentUser = null;
+        let userWallet = 0;
         let currentMediaIndex = 0;
         let currentMediaSlides = [];
         let loadingFinished = false;
@@ -441,6 +615,7 @@
                         authSection.classList.add('hidden');
                         appSection.classList.remove('hidden');
                         loadUserData(user);
+                        listenToWallet();
                         loadAccounts();
                     } else {
                         currentUser = null;
@@ -462,6 +637,13 @@
                 console.error('Error loading user data:', error);
                 utils.showToast('Error loading user data', 'error');
             }
+        }
+
+        function listenToWallet() {
+            onValue(ref(db, `users/${currentUser.uid}/wallet`), (snap) => {
+                userWallet = snap.val() || 0;
+                document.getElementById('wallet-balance').textContent = userWallet.toFixed(2);
+            });
         }
 
         // Login/Register
@@ -517,7 +699,7 @@
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
                 await set(ref(db, `users/${cred.user.uid}`), {
-                    email, username, createdAt: new Date().toISOString()
+                    email, username, wallet: 0, createdAt: new Date().toISOString()
                 });
                 hideAuthError();
             } catch(e) { 
@@ -593,12 +775,16 @@
                         <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Instant</span>
                         <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">Verified</span>
                     </div>
-                    <a href="${data.contactLink || '#'}" target="_blank" class="w-full bg-violet-600 hover:bg-violet-500 text-white font-medium py-2.5 rounded-lg transition-colors text-sm flex items-center justify-center gap-2">
-                        <i class="fas fa-comment" aria-hidden="true"></i> Chat Now
-                    </a>
+                    <button class="w-full bg-slate-800 hover:bg-violet-600 hover:text-white text-slate-300 font-medium py-2.5 rounded-lg transition-colors text-sm">
+                        View Details
+                    </button>
                 </div>
             `;
             
+            // View Details Click
+            el.addEventListener('click', (e) => {
+                if(!data.isSold) showDetails(id);
+            });
             return el;
         }
 
@@ -643,11 +829,209 @@
             firstElement.focus();
         }
 
+        // Details Modal & Gallery
+        async function showDetails(id) {
+            try {
+                const snap = await get(ref(db, `accounts/${id}`));
+                if(!snap.exists()) {
+                    utils.showToast('Account not found', 'error');
+                    return;
+                }
+                const data = snap.val();
+                
+                document.getElementById('modal-title').textContent = data.name;
+                document.getElementById('modal-description').textContent = data.description;
+                
+                // Media Setup
+                currentMediaSlides = [];
+                if(data.mainImage) currentMediaSlides.push({type: 'img', url: data.mainImage});
+                if(data.videoUrl) currentMediaSlides.push({type: 'vid', url: data.videoUrl});
+                if(data.otherImages) data.otherImages.forEach(u => currentMediaSlides.push({type: 'img', url: u}));
+                
+                currentMediaIndex = 0;
+                renderMedia();
+                
+                // Buttons
+                const btnContainer = document.getElementById('modal-buttons');
+                btnContainer.innerHTML = `
+                    <a href="${data.contactLink || '#'}" target="_blank" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                        <i class="fas fa-comment" aria-hidden="true"></i> Chat
+                    </a>
+                `;
+                
+                if(!data.isSold && userWallet >= data.price) {
+                    const buyBtn = document.createElement('button');
+                    buyBtn.className = 'flex-[2] bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-violet-500/25 transition';
+                    buyBtn.innerHTML = `Buy Now (₹${data.price})`;
+                    buyBtn.onclick = () => handleBuy(id, data);
+                    btnContainer.appendChild(buyBtn);
+                } else if (!data.isSold) {
+                    const insufficientBtn = document.createElement('button');
+                    insufficientBtn.className = 'flex-[2] bg-slate-700 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed';
+                    insufficientBtn.innerHTML = `Insufficient Funds`;
+                    btnContainer.appendChild(insufficientBtn);
+                }
+                
+                toggleModal('details-modal', true);
+            } catch (error) {
+                console.error('Error loading account details:', error);
+                utils.showToast('Error loading account details', 'error');
+            }
+        }
 
+        function renderMedia() {
+            const slider = document.getElementById('media-slider');
+            const indicators = document.getElementById('media-indicators');
+            slider.innerHTML = '';
+            indicators.innerHTML = '';
+            
+            currentMediaSlides.forEach((slide, i) => {
+                const div = document.createElement('div');
+                div.className = 'w-full h-full flex-shrink-0 flex items-center justify-center bg-black';
+                if(slide.type === 'img') {
+                    div.innerHTML = `<img src="${slide.url}" class="max-h-full max-w-full object-contain" alt="Account image ${i+1}" loading="lazy">`;
+                } else {
+                    div.innerHTML = `<video src="${slide.url}" controls class="max-h-full max-w-full" aria-label="Account video"></video>`;
+                }
+                slider.appendChild(div);
+                
+                const dot = document.createElement('button');
+                dot.className = `w-2 h-2 rounded-full transition-all ${i === currentMediaIndex ? 'bg-white w-4' : 'bg-white/40'}`;
+                dot.onclick = () => { currentMediaIndex = i; renderMedia(); };
+                dot.setAttribute('aria-label', `Go to slide ${i+1}`);
+                indicators.appendChild(dot);
+            });
+            
+            slider.style.transform = `translateX(-${currentMediaIndex * 100}%)`;
+        }
+        
+        document.getElementById('media-prev').onclick = () => {
+            currentMediaIndex = (currentMediaIndex - 1 + currentMediaSlides.length) % currentMediaSlides.length;
+            renderMedia();
+        };
+        document.getElementById('media-next').onclick = () => {
+            currentMediaIndex = (currentMediaIndex + 1) % currentMediaSlides.length;
+            renderMedia();
+        };
 
+        // Purchase Logic
+        async function handleBuy(id, data) {
+            if(!confirm(`Buy ${data.name} for ₹${data.price}?`)) return;
+            if(userWallet < data.price) {
+                utils.showToast('Insufficient funds', 'error');
+                return;
+            }
+            
+            try {
+                const newBal = userWallet - data.price;
+                await set(ref(db, `users/${currentUser.uid}/wallet`), newBal);
+                await update(ref(db, `accounts/${id}`), {
+                    isSold: true, soldTo: currentUser.uid, soldAt: new Date().toISOString()
+                });
+                await set(ref(db, `transactions/${currentUser.uid}/txn_${Date.now()}`), {
+                    type: 'purchase', amount: data.price, desc: `Bought ${data.name}`, date: new Date().toISOString()
+                });
+                
+                toggleModal('details-modal', false);
+                document.getElementById('purchased-id').textContent = data.ffId || 'Hidden';
+                document.getElementById('purchased-pass').textContent = data.ffPassword || 'Hidden';
+                toggleModal('credentials-modal', true);
+                
+                utils.showToast('Purchase successful!', 'success');
+            } catch (error) {
+                console.error('Error processing purchase:', error);
+                utils.showToast('Error processing purchase', 'error');
+            }
+        }
 
+        // Deposit & Transactions UI Handlers
+        document.getElementById('deposit-btn').onclick = () => toggleModal('deposit-modal', true);
+        document.getElementById('close-deposit-modal').onclick = () => toggleModal('deposit-modal', false);
+        document.getElementById('transactions-btn').onclick = () => {
+            toggleModal('transactions-modal', true);
+            loadTransactions();
+        };
+        document.getElementById('close-transactions-modal').onclick = () => toggleModal('transactions-modal', false);
+        document.getElementById('close-details-modal').onclick = () => toggleModal('details-modal', false);
+        document.getElementById('close-credentials-modal').onclick = () => toggleModal('credentials-modal', false);
 
+        // Close modals on backdrop click
+        document.querySelectorAll('[id$="-modal"]').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.id.includes('backdrop')) {
+                    toggleModal(modal.id, false);
+                }
+            });
+        });
 
+        function loadTransactions() {
+            onValue(ref(db, `transactions/${currentUser.uid}`), (snap) => {
+                const list = document.getElementById('transactions-list');
+                list.innerHTML = '';
+                const data = snap.val();
+                if(!data) list.innerHTML = '<p class="text-slate-500 text-center">No transactions.</p>';
+                else {
+                    Object.values(data).reverse().forEach(t => {
+                        const isDep = t.type === 'deposit';
+                        list.innerHTML += `
+                            <div class="flex justify-between items-center bg-slate-800/50 p-3 rounded-lg border-l-4 ${isDep ? 'border-emerald-500' : 'border-red-500'}">
+                                <div>
+                                    <div class="font-medium text-slate-200">${t.desc || t.description}</div>
+                                    <div class="text-xs text-slate-500">${new Date(t.date || t.timestamp).toLocaleDateString()}</div>
+                                </div>
+                                <div class="font-bold ${isDep ? 'text-emerald-400' : 'text-red-400'}">
+                                    ${isDep ? '+' : '-'}₹${t.amount}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+        
+        // Submit Deposit
+        document.getElementById('submit-deposit-btn').onclick = async () => {
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            const payerName = document.getElementById('payer-name').value;
+            const utr = document.getElementById('utr-id').value;
+            
+            // Validation
+            if (!amount || amount <= 0) {
+                utils.showToast('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            if (!payerName) {
+                utils.showToast('Please enter your name', 'error');
+                return;
+            }
+            
+            if (!utr || utr.length !== 12) {
+                utils.showToast('Please enter a valid 12-digit UTR', 'error');
+                return;
+            }
+            
+            try {
+                // In a real app, this waits for admin approval. Here we simulate request.
+                await set(ref(db, `depositRequests/req_${Date.now()}`), {
+                    uid: currentUser.uid, 
+                    amount, 
+                    utr, 
+                    payerName,
+                    status: 'pending',
+                    timestamp: new Date().toISOString()
+                });
+                
+                utils.showToast('Deposit request submitted!', 'success');
+                toggleModal('deposit-modal', false);
+                
+                // Reset form
+                document.getElementById('deposit-form').reset();
+            } catch (error) {
+                console.error('Error submitting deposit:', error);
+                utils.showToast('Error submitting deposit request', 'error');
+            }
+        };
 
         // Star Background Logic
         const canvas = document.getElementById('star-canvas');
@@ -677,5 +1061,4 @@
         animateStars();
     </script>
 </body>
-
-</html> 
+</html>
