@@ -189,14 +189,19 @@
         <div class="grid-2">
             <div class="form-group">
                 <label for="interval">Repeat interval (sec)</label>
-                <input type="number" id="interval" value="5" min="1" max="3600">
-                <div class="helper-text">Delay between messages</div>
+                <input type="number" id="interval" value="0" min="0" max="3600">
+                <div class="helper-text">0 = no delay</div>
             </div>
             <div class="form-group">
                 <label for="times">Times to send</label>
                 <input type="number" id="times" value="1" min="1" max="1000">
                 <div class="helper-text">1 = send once</div>
             </div>
+        </div>
+
+        <div class="form-group" style="flex-direction: row; align-items: center; margin-top: 0.5rem;">
+            <input type="checkbox" id="parallelMode" style="width: auto; margin-right: 8px;">
+            <label for="parallelMode" style="margin-bottom: 0;">Send all at once (parallel)</label>
         </div>
 
         <div class="button-group">
@@ -216,6 +221,7 @@
         const usernameInput = document.getElementById('username');
         const intervalInput = document.getElementById('interval');
         const timesInput = document.getElementById('times');
+        const parallelMode = document.getElementById('parallelMode');
         const sendBtn = document.getElementById('sendBtn');
         const stopBtn = document.getElementById('stopBtn');
         const statusDiv = document.getElementById('status');
@@ -224,6 +230,7 @@
         const progressTotal = document.getElementById('progressTotal');
 
         let isSending = false;
+        let sentCount = 0;
 
         sendBtn.addEventListener('click', startSending);
         stopBtn.addEventListener('click', stopSending);
@@ -232,8 +239,9 @@
             const webhookUrl = webhookInput.value.trim();
             const message = messageInput.value.trim();
             const username = usernameInput.value.trim();
-            const interval = parseInt(intervalInput.value);
+            const interval = parseInt(intervalInput.value) || 0;
             const times = parseInt(timesInput.value);
+            const useParallel = parallelMode.checked;
 
             if (!webhookUrl) {
                 showStatus('error', 'Enter a webhook URL');
@@ -255,17 +263,13 @@
                 return;
             }
 
-            if (isNaN(interval) || interval < 1) {
-                showStatus('error', 'Interval must be at least 1 second');
-                return;
-            }
-
             if (isNaN(times) || times < 1) {
                 showStatus('error', 'Times must be at least 1');
                 return;
             }
 
             isSending = true;
+            sentCount = 0;
             statusDiv.style.display = 'none';
             progressDiv.style.display = 'block';
             progressTotal.textContent = times;
@@ -278,9 +282,24 @@
             usernameInput.disabled = true;
             intervalInput.disabled = true;
             timesInput.disabled = true;
+            parallelMode.disabled = true;
 
+            if (useParallel) {
+                await sendParallel(webhookUrl, message, username, times);
+            } else {
+                await sendSequential(webhookUrl, message, username, times, interval);
+            }
+
+            if (isSending && sentCount === times) {
+                showStatus('success', `All ${times} message(s) sent!`);
+            }
+
+            finishSending();
+        }
+
+        async function sendSequential(webhookUrl, message, username, times, interval) {
             for (let i = 0; i < times && isSending; i++) {
-                if (i > 0 && isSending) {
+                if (i > 0 && isSending && interval > 0) {
                     await sleep(interval * 1000);
                 }
 
@@ -303,7 +322,8 @@
                         body: JSON.stringify(payload)
                     });
 
-                    progressCount.textContent = i + 1;
+                    sentCount++;
+                    progressCount.textContent = sentCount;
 
                     if (!response.ok) {
                         if (response.status === 404) {
@@ -319,12 +339,49 @@
                     break;
                 }
             }
+        }
 
-            if (isSending && parseInt(progressCount.textContent) === times) {
-                showStatus('success', `All ${times} message(s) sent!`);
+        async function sendParallel(webhookUrl, message, username, times) {
+            const promises = [];
+
+            for (let i = 0; i < times && isSending; i++) {
+                const promise = (async () => {
+                    try {
+                        const payload = {
+                            content: message
+                        };
+
+                        if (username) {
+                            payload.username = username;
+                        }
+
+                        const response = await fetch(webhookUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        sentCount++;
+                        progressCount.textContent = sentCount;
+
+                        if (!response.ok) {
+                            if (response.status === 404) {
+                                showStatus('error', 'Webhook not found. Check the URL.');
+                            } else if (response.status === 401) {
+                                showStatus('error', 'Webhook is invalid or expired.');
+                            }
+                        }
+                    } catch (err) {
+                        showStatus('error', 'Network error.');
+                    }
+                })();
+
+                promises.push(promise);
             }
 
-            finishSending();
+            await Promise.all(promises);
         }
 
         function stopSending() {
