@@ -1,416 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Webhook Sender</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server Control Panel</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-            min-height: 100vh;
-        }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+.container {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
 
-        h1 {
-            font-size: 24px;
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
+h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #e94560, #0f3460);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-        .form-group {
-            margin-bottom: 1rem;
-            display: flex;
-            flex-direction: column;
-        }
+.subtitle {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
 
-        label {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-        }
+.restart-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #e94560, #c23152);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+}
 
-        input[type="url"],
-        input[type="text"],
-        input[type="number"],
-        textarea {
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
+.restart-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
+}
 
-        input[type="url"]:focus,
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #5865f2;
-            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.1);
-        }
+.restart-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
 
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
+.restart-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
-        .helper-text {
-            font-size: 12px;
-            color: #666;
-            margin-top: 6px;
-        }
+.status {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: none;
+}
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
+.status.success {
+  display: block;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  color: #81c784;
+}
 
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 0.5rem;
-        }
+.status.error {
+  display: block;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.5);
+  color: #e57373;
+}
 
-        button {
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-        }
+.status.loading {
+  display: block;
+  background: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.5);
+  color: #ffd54f;
+}
 
-        #sendBtn {
-            background: #5865f2;
-            color: white;
-        }
+.info-box {
+  margin-top: 25px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #888;
+  text-align: left;
+  line-height: 1.6;
+}
 
-        #sendBtn:hover:not(:disabled) {
-            background: #4752c4;
-        }
-
-        #sendBtn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #stopBtn {
-            background: white;
-            color: #dc3545;
-            border: 1px solid #dc3545;
-            display: none;
-        }
-
-        #stopBtn:hover:not(:disabled) {
-            background: #f8f9fa;
-        }
-
-        .status {
-            display: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-top: 1rem;
-            border: 1px solid;
-        }
-
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border-color: #c3e6cb;
-        }
-
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border-color: #f5c6cb;
-        }
-
-        .status.warning {
-            background: #fff3cd;
-            color: #856404;
-            border-color: #ffeaa7;
-        }
-
-        .progress {
-            display: none;
-            padding: 12px;
-            border-radius: 6px;
-            background: #cfe2ff;
-            color: #084298;
-            border: 1px solid #b6d4fe;
-            font-size: 14px;
-            margin-top: 1rem;
-        }
-    </style>
+.info-box strong {
+  color: #ccc;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Discord Webhook Sender</h1>
+<div class="container">
+<h1>Server Control Panel</h1>
+<p class="subtitle">Restart all game servers instantly</p>
 
-        <div class="form-group">
-            <label for="webhookUrl">Webhook URL</label>
-            <input type="url" id="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
-            <div class="helper-text">Paste your Discord webhook URL here</div>
-        </div>
+<button class="restart-btn" id="restartBtn" onclick="restartServers()">
+Restart All Servers
+</button>
 
-        <div class="form-group">
-            <label for="messageText">Message</label>
-            <textarea id="messageText" placeholder="Type your message here..."></textarea>
-            <div class="helper-text">Max 2000 characters</div>
-        </div>
+<div class="status" id="statusBox"></div>
 
-        <div class="form-group">
-            <label for="username">Username (optional)</label>
-            <input type="text" id="username" placeholder="Webhook Bot">
-        </div>
+<div class="info-box">
+<strong>What happens when you click:</strong><br>
+- All live servers receive a restart signal<br>
+- Players are teleported to fresh servers<br>
+- Players who were together stay together<br>
+- Old servers shut down automatically
+</div>
+</div>
 
-        <div class="grid-2">
-            <div class="form-group">
-                <label for="interval">Repeat interval (sec)</label>
-                <input type="number" id="interval" value="0" min="0" max="3600">
-                <div class="helper-text">0 = no delay</div>
-            </div>
-            <div class="form-group">
-                <label for="times">Times to send</label>
-                <input type="number" id="times" value="1" min="1" max="1000">
-                <div class="helper-text">1 = send once</div>
-            </div>
-        </div>
+<script>
+async function restartServers() {
+  const btn = document.getElementById("restartBtn");
+  const status = document.getElementById("statusBox");
 
-        <div class="form-group" style="flex-direction: row; align-items: center; margin-top: 0.5rem;">
-            <input type="checkbox" id="parallelMode" style="width: auto; margin-right: 8px;">
-            <label for="parallelMode" style="margin-bottom: 0;">Send all at once (parallel)</label>
-        </div>
+  if (!confirm("Are you sure? This will restart ALL servers and teleport every player!")) {
+    return;
+  }
 
-        <div class="button-group">
-            <button id="sendBtn">Send Message</button>
-            <button id="stopBtn">Stop Sending</button>
-        </div>
+  btn.disabled = true;
+  btn.textContent = "Sending signal...";
 
-        <div id="status" class="status"></div>
-        <div id="progress" class="progress">
-            Sent: <span id="progressCount">0</span> / <span id="progressTotal">0</span>
-        </div>
-    </div>
+  status.className = "status loading";
+  status.textContent = "Sending restart signal to all servers...";
 
-    <script>
-        const webhookInput = document.getElementById('webhookUrl');
-        const messageInput = document.getElementById('messageText');
-        const usernameInput = document.getElementById('username');
-        const intervalInput = document.getElementById('interval');
-        const timesInput = document.getElementById('times');
-        const parallelMode = document.getElementById('parallelMode');
-        const sendBtn = document.getElementById('sendBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const statusDiv = document.getElementById('status');
-        const progressDiv = document.getElementById('progress');
-        const progressCount = document.getElementById('progressCount');
-        const progressTotal = document.getElementById('progressTotal');
+  try {
+    const response = await fetch("/.netlify/functions/restart", {
+      method: "POST",
+    });
 
-        let isSending = false;
-        let sentCount = 0;
+    const data = await response.json();
 
-        sendBtn.addEventListener('click', startSending);
-        stopBtn.addEventListener('click', stopSending);
+    if (response.ok && data.success) {
+      status.className = "status success";
+      status.textContent = "Restart signal sent! All servers are restarting.";
+      btn.textContent = "Restart Sent!";
+    } else {
+      status.className = "status error";
+      status.textContent = "Error: " + (data.error || "Unknown error");
+      btn.textContent = "Failed - Try Again";
+    }
+  } catch (err) {
+    status.className = "status error";
+    status.textContent = "Network error: " + err.message;
+    btn.textContent = "Failed - Try Again";
+  }
 
-        async function startSending() {
-            const webhookUrl = webhookInput.value.trim();
-            const message = messageInput.value.trim();
-            const username = usernameInput.value.trim();
-            const interval = parseInt(intervalInput.value) || 0;
-            const times = parseInt(timesInput.value);
-            const useParallel = parallelMode.checked;
-
-            if (!webhookUrl) {
-                showStatus('error', 'Enter a webhook URL');
-                return;
-            }
-
-            if (!message) {
-                showStatus('error', 'Enter a message');
-                return;
-            }
-
-            if (message.length > 2000) {
-                showStatus('error', 'Message too long (max 2000 characters)');
-                return;
-            }
-
-            if (!webhookUrl.includes('discord.com/api/webhooks')) {
-                showStatus('error', 'Invalid Discord webhook URL');
-                return;
-            }
-
-            if (isNaN(times) || times < 1) {
-                showStatus('error', 'Times must be at least 1');
-                return;
-            }
-
-            isSending = true;
-            sentCount = 0;
-            statusDiv.style.display = 'none';
-            progressDiv.style.display = 'block';
-            progressTotal.textContent = times;
-            progressCount.textContent = '0';
-
-            sendBtn.disabled = true;
-            stopBtn.style.display = 'block';
-            webhookInput.disabled = true;
-            messageInput.disabled = true;
-            usernameInput.disabled = true;
-            intervalInput.disabled = true;
-            timesInput.disabled = true;
-            parallelMode.disabled = true;
-
-            if (useParallel) {
-                await sendParallel(webhookUrl, message, username, times);
-            } else {
-                await sendSequential(webhookUrl, message, username, times, interval);
-            }
-
-            if (isSending && sentCount === times) {
-                showStatus('success', `All ${times} message(s) sent!`);
-            }
-
-            finishSending();
-        }
-
-        async function sendSequential(webhookUrl, message, username, times, interval) {
-            for (let i = 0; i < times && isSending; i++) {
-                if (i > 0 && isSending && interval > 0) {
-                    await sleep(interval * 1000);
-                }
-
-                if (!isSending) break;
-
-                try {
-                    const payload = {
-                        content: message
-                    };
-
-                    if (username) {
-                        payload.username = username;
-                    }
-
-                    const response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    sentCount++;
-                    progressCount.textContent = sentCount;
-
-                    if (!response.ok) {
-                        if (response.status === 404) {
-                            showStatus('error', 'Webhook not found. Check the URL.');
-                            break;
-                        } else if (response.status === 401) {
-                            showStatus('error', 'Webhook is invalid or expired.');
-                            break;
-                        }
-                    }
-                } catch (err) {
-                    showStatus('error', 'Network error. Stopped sending.');
-                    break;
-                }
-            }
-        }
-
-        async function sendParallel(webhookUrl, message, username, times) {
-            const promises = [];
-
-            for (let i = 0; i < times && isSending; i++) {
-                const promise = (async () => {
-                    try {
-                        const payload = {
-                            content: message
-                        };
-
-                        if (username) {
-                            payload.username = username;
-                        }
-
-                        const response = await fetch(webhookUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-
-                        sentCount++;
-                        progressCount.textContent = sentCount;
-
-                        if (!response.ok) {
-                            if (response.status === 404) {
-                                showStatus('error', 'Webhook not found. Check the URL.');
-                            } else if (response.status === 401) {
-                                showStatus('error', 'Webhook is invalid or expired.');
-                            }
-                        }
-                    } catch (err) {
-                        showStatus('error', 'Network error.');
-                    }
-                })();
-
-                promises.push(promise);
-            }
-
-            await Promise.all(promises);
-        }
-
-        function stopSending() {
-            isSending = false;
-            showStatus('warning', 'Stopped');
-            finishSending();
-        }
-
-        function finishSending() {
-            isSending = false;
-            progressDiv.style.display = 'none';
-            sendBtn.disabled = false;
-            stopBtn.style.display = 'none';
-            webhookInput.disabled = false;
-            messageInput.disabled = false;
-            usernameInput.disabled = false;
-            intervalInput.disabled = false;
-            timesInput.disabled = false;
-        }
-
-        function showStatus(type, message) {
-            statusDiv.textContent = message;
-            statusDiv.style.display = 'block';
-            statusDiv.className = 'status ' + type;
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = "Restart All Servers";
+  }, 5000);
+}
+</script>
 </body>
 </html>
